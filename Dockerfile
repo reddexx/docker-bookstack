@@ -51,7 +51,7 @@ COPY bookstack.conf /etc/apache2/sites-available/000-default.conf
 
 COPY --from=bookstack --chown=33:33 /bookstack/ /var/www/bookstack/
 
-ARG COMPOSER_VERSION=2.1.12
+ARG COMPOSER_VERSION=2.0.12
 RUN set -x; \
     cd /var/www/bookstack \
     && curl -sS https://getcomposer.org/installer | php -- --version=$COMPOSER_VERSION
