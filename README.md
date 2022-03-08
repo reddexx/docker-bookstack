@@ -1,7 +1,7 @@
 ## Docker Image For [BookStack](https://github.com/ssddanbrown/BookStack)
 
 
-## Current Version: 21.12
+## Current Version: 22.02
 
 
 ### How to use the Image without Docker compose
