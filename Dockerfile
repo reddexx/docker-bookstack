@@ -1,5 +1,5 @@
 FROM alpine:3 as bookstack
-ENV BOOKSTACK_VERSION=23.10.4
+ENV BOOKSTACK_VERSION=23.12
 RUN apk add --no-cache curl tar
 RUN set -x; \
     curl -SL -o bookstack.tar.gz https://github.com/BookStackApp/BookStack/archive/v${BOOKSTACK_VERSION}.tar.gz  \
@@ -7,7 +7,7 @@ RUN set -x; \
     && tar xvf bookstack.tar.gz -C /bookstack --strip-components=1 \
     && rm bookstack.tar.gz
 
-FROM php:8.0-apache-buster as final
+FROM php:8.3-apache-bookworm as final
 RUN set -x; \
     apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -22,17 +22,20 @@ RUN set -x; \
         libxml2-dev  \
         fontconfig  \
         fonts-freefont-ttf   \
-        wkhtmltopdf  \
+        wget \
         tar \
         curl \
         libzip-dev \
         unzip \
-    \
-   && docker-php-ext-install -j$(nproc) dom pdo pdo_mysql zip tidy  \
-   && docker-php-ext-configure ldap \
-   && docker-php-ext-install -j$(nproc) ldap \
-   && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
-   && docker-php-ext-install -j$(nproc) gd
+    && wget -O wkhtmltox.deb https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.bookworm_amd64.deb \
+    && chmod a+x ./wkhtmltox.deb \
+    && apt-get install -y ./wkhtmltox.deb \
+    && rm ./wkhtmltox.deb \
+    && docker-php-ext-install -j$(nproc) dom pdo pdo_mysql zip tidy  \
+    && docker-php-ext-configure ldap \
+    && docker-php-ext-install -j$(nproc) ldap \
+    && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
+    && docker-php-ext-install -j$(nproc) gd
 
 RUN a2enmod rewrite remoteip; \
     { \
@@ -87,4 +90,3 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.vcs-ref=$VCS_REF \
       org.label-schema.vcs-url="https://github.com/solidnerd/docker-bookstack.git" \
       org.label-schema.vcs-type="Git"
-      
