@@ -1,13 +1,13 @@
-FROM alpine:3 as bookstack
-ENV BOOKSTACK_VERSION=24.10.3
+FROM alpine:3 AS bookstack
+ENV BOOKSTACK_VERSION=v24.12.1
 RUN apk add --no-cache curl tar
 RUN set -x; \
-    curl -SL -o bookstack.tar.gz https://github.com/BookStackApp/BookStack/archive/v${BOOKSTACK_VERSION}.tar.gz  \
+    curl -SL -o bookstack.tar.gz https://github.com/BookStackApp/BookStack/archive/${BOOKSTACK_VERSION}.tar.gz  \
     && mkdir -p /bookstack \
     && tar xvf bookstack.tar.gz -C /bookstack --strip-components=1 \
     && rm bookstack.tar.gz
 
-FROM php:8.3-apache-bookworm as final
+FROM php:8.3-apache-bookworm AS final
 RUN set -x; \
     apt-get update \
     && apt-get install -y --no-install-recommends \
